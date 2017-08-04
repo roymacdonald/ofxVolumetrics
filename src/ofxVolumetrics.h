@@ -7,17 +7,20 @@
 
 */
 
+#define USE_AUTO_RELOAD_SHADER
+
 #include "ofFbo.h"
 #include "ofShader.h"
 #include "ofxTexture3d.h"
-#include "ofxImageSequencePlayer.h"
-
+#ifdef USE_AUTO_RELOAD_SHADER
+#include "ofxAutoReloadedShader.h"
+#endif
 class ofxVolumetrics
 {
 public:
     ofxVolumetrics();
     virtual ~ofxVolumetrics();
-    void setup(int w, int h, int d, ofVec3f voxelSize, bool usePowerOfTwoTexSize=false);
+    void setup(int w, int h, int d, ofVec3f voxelSize, bool usePowerOfTwoTexSize=false, bool bSetShader = true);
     void destroy();
     void updateVolumeData(unsigned char * data, int w, int h, int d, int xOffset, int yOffset, int zOffset);
     void drawVolume(float x, float y, float z, float size, int zTexOffset);
@@ -26,6 +29,7 @@ public:
     int getVolumeWidth();
     int getVolumeHeight();
     int getVolumeDepth();
+    ofVec3f getVolumeSize();
     ofFbo & getFboReference();
     int getRenderWidth();
     int getRenderHeight();
@@ -39,24 +43,48 @@ public:
     void setDensity(float d);
     void setRenderSettings(float xyQuality, float zQuality, float dens, float thresh);
     void setVolumeTextureFilterMode(GLint filterMode);
+    void loadShader(string path);
+    ofParameterGroup parameters;
+    ofxTexture3d& getTexture(){return volumeTexture;}
+
+    void setPlaneNormal(const ofVec3f & norm);
+    void setPlanePos(const float & pos);
+    
+    ofParameter<float>  threshold, density, planePos;
+    ofParameter<ofVec3f> planeNorm, quality;
+    
 protected:
+    void setShader();
+    void setParameters();
 private:
     void drawRGBCube();
     void updateRenderDimentions();
 
     ofFbo fboRender;
+#ifdef USE_AUTO_RELOAD_SHADER
+    ofxAutoReloadedShader volumeShader;
+#else
     ofShader volumeShader;
+#endif
     ofxTexture3d volumeTexture;
     //ofMesh volumeMesh; //unfortunately this only supports 2d texture coordinates at the moment.
     ofVec3f volVerts[24];
     ofVec3f volNormals[24];
+    ofVec3f volTexCoords[24];
     ofVec3f voxelRatio;
     bool bIsInitialized;
     int volWidth, volHeight, volDepth;
     int volWidthPOT, volHeightPOT, volDepthPOT;
     bool bIsPowerOfTwo;
-    ofVec3f quality;
-    float threshold;
-    float density;
+//    ofVec3f quality;
+    //float threshold;
+    //float density;
     int renderWidth, renderHeight;
+
+
+    void qualityChanged(ofVec3f &q);
+    
+    bool bParametersSet;
+    
+
 };
