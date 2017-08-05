@@ -432,7 +432,6 @@ void ofxVolumetrics::updateRenderDimentions(){
 void ofxVolumetrics::qualityChanged(ofVec3f &q){
     updateRenderDimentions();
 }
-
 //------------------------------------------------------------------------------------------------
 void ofxVolumetrics::setPlaneNormal(const ofVec3f & norm){
     planeNorm.set(norm);

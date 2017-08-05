@@ -91,7 +91,9 @@ void ofxTexture3d::loadData(void * data, int w, int h, int d, int xOffset, int y
         return;
     }
 
+
     ofSetPixelStoreiAlignment(GL_UNPACK_ALIGNMENT,w, 1, ofGetNumChannelsFromGLFormat(glFormat));
+
     glEnable(texData.textureTarget);
     glBindTexture(texData.textureTarget, (GLuint) texData.textureID);
     glTexSubImage3D(texData.textureTarget, 0, xOffset, yOffset, zOffset, w, h, d, texData.glType, texData.pixelType, data);
