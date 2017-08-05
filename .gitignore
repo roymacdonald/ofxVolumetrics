@@ -24,6 +24,17 @@ build/
 *.pbxuser
 *.perspectivev3
 xcuserdata/
+*.xcconfig
+*.xcodeproj/
+*.make
+icon.rc
+
+openFrameworks-Info.plist
+
+
+Makefile
+
+*.app/
 
 # Compiled source #
 ###################
@@ -54,7 +65,7 @@ xcuserdata/
 
 # OS generated files #
 ######################
-.DS_Store?
+.DS_Store
 ehthumbs.db
 Icon?
 Thumbs.db
