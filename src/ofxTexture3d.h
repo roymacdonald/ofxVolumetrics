@@ -37,24 +37,19 @@ class ofxTextureData3d : public ofTextureData
     int glTypeInternal;
 };
 
+template< typename T>
 class ofxTexture3d
 {
     public:
         ofxTexture3d();
         virtual ~ofxTexture3d();
         void allocate(int w, int h, int d, int internalGlDataType);
-        void loadData(unsigned char * data, int w, int h, int d, int xOffset, int yOffset, int zOffset, int glFormat);
-        void loadData(float* data, int w, int h, int d, int xOffset, int yOffset, int zOffset, int glFormat);
-        void loadData(unsigned short* data, int w, int h, int d, int xOffset, int yOffset, int zOffset, int glFormat);
-        void loadData(ofPixels & pix, int d, int xOffset, int yOffset, int zOffset);
-        void loadData(ofShortPixels & pix, int d, int xOffset, int yOffset, int zOffset);
-        void loadData(ofFloatPixels & pix, int d, int xOffset, int yOffset, int zOffset);
+        void loadData(T * data, int w, int h, int d, int xOffset, int yOffset, int zOffset);
         void bind();
         void unbind();
         void clear();
         ofxTextureData3d getTextureData();
     protected:
-        void loadData(void * data, int w, int h, int d, int xOffset, int yOffset, int zOffset, int glFormat);
     private:
         ofxTextureData3d texData;
 };

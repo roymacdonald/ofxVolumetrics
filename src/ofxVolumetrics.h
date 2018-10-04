@@ -15,28 +15,32 @@
 #ifdef USE_AUTO_RELOAD_SHADER
 #include "ofxAutoReloadedShader.h"
 #endif
+template< typename T>
 class ofxVolumetrics
 {
 public:
     ofxVolumetrics();
     virtual ~ofxVolumetrics();
-    void setup(int w, int h, int d, ofVec3f voxelSize, bool usePowerOfTwoTexSize=false, bool bSetShader = true);
+    //internalformat = GL_RGBA...
+    void setup(int vol_w, int vol_h, int vol_d, int tex_w, int tex_h, int tex_d, ofVec3f voxelSize,  int internalformat, bool usePowerOfTwoTexSize=false, bool bSetShader = true);
     void destroy();
-    void updateVolumeData(unsigned char * data, int w, int h, int d, int xOffset, int yOffset, int zOffset);
-    void drawVolume(float x, float y, float z, float size, int zTexOffset);
-    void drawVolume(float x, float y, float z, float w, float h, float d, int zTexOffset);
+    void updateVolumeData(T * data, int w, int h, int d, int xOffset, int yOffset, int zOffset);
+    void drawVolume(float x, float y, float z, float size, float zTexOffset);
+    void drawVolume(float x, float y, float z, float w, float h, float d, float zTexOffset);
+
     bool isInitialized();
     int getVolumeWidth();
     int getVolumeHeight();
     int getVolumeDepth();
     ofVec3f getVolumeSize();
-    ofFbo & getFboReference();
-    int getRenderWidth();
-    int getRenderHeight();
+    ofVec3f getVolumeSizePOT();
+
     float getXyQuality();
     float getZQuality();
     float getThreshold();
     float getDensity();
+    ofxTexture3d<T>& getTexture(){return volumeTexture;}
+
     void setXyQuality(float q);
     void setZQuality(float q);
     void setThreshold(float t);
@@ -44,30 +48,31 @@ public:
     void setRenderSettings(float xyQuality, float zQuality, float dens, float thresh);
     void setVolumeTextureFilterMode(GLint filterMode);
     void loadShader(string path);
-    ofParameterGroup parameters;
-    ofxTexture3d& getTexture(){return volumeTexture;}
 
     void setPlaneNormal(const ofVec3f & norm);
     void setPlanePos(const float & pos);
     
+    ofParameterGroup parameters;
     ofParameter<float>  threshold, density, planePos;
-    ofParameter<ofVec3f> planeNorm, quality;
+    ofParameter<glm::vec3> planeNorm, quality;
+    ofParameter<bool>bCullFace;
+    ofParameter<bool>bLinearNearest;
     
 protected:
     void setShader();
     void setParameters();
-private:
-    void drawRGBCube();
-    void updateRenderDimentions();
 
-    ofFbo fboRender;
+    void drawRGBCube();
+
+
+    virtual void setShaderUniforms();
 #ifdef USE_AUTO_RELOAD_SHADER
     ofxAutoReloadedShader volumeShader;
 #else
     ofShader volumeShader;
 #endif
-    ofxTexture3d volumeTexture;
-    //ofMesh volumeMesh; //unfortunately this only supports 2d texture coordinates at the moment.
+private:
+    ofxTexture3d<T> volumeTexture;
     ofVec3f volVerts[24];
     ofVec3f volNormals[24];
     ofVec3f volTexCoords[24];
@@ -76,15 +81,14 @@ private:
     int volWidth, volHeight, volDepth;
     int volWidthPOT, volHeightPOT, volDepthPOT;
     bool bIsPowerOfTwo;
-//    ofVec3f quality;
-    //float threshold;
-    //float density;
-    int renderWidth, renderHeight;
+    
 
 
-    void qualityChanged(ofVec3f &q);
+    void linearNearestChanged(bool & b);
+
     
     bool bParametersSet;
     
-
+    float zTexOffset=0;
+    
 };
